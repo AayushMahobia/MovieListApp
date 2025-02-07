@@ -30,8 +30,7 @@ struct HomeView: View {
                             VStack(spacing: 18) {
                                 ForEach(homeViewModel.categoryList, id: \.self) { category in
                                     if let categoryData = homeViewModel.categoryDict[category] {
-                                        CategoryView(isLoading: $homeViewModel.isLoading, categoryData: categoryData, categoryName: category)
-//                                            .redactionShimmerViewModifier(isLoading: $homeViewModel.isLoading)
+                                        CategoryView(categoryData: categoryData, categoryName: category)
                                     }
                                 }
                             }
@@ -58,9 +57,8 @@ struct HomeView: View {
                         return Color.clear
                     })
                     .background(navBarMaxYOffset <= tabMinYOffset ? Color.clear : Color.black)
-                    .redactionShimmerViewModifier(isLoading: $homeViewModel.isLoading)
                 }
-                
+                .redactionShimmerViewModifier(isLoading: $homeViewModel.isLoading)
             }
         }
         .onAppear(){

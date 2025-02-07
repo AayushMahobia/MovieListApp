@@ -6,16 +6,13 @@
 //
 
 import Foundation
-import Compression
-//import BrotliKit
 
-@MainActor
 class HomeViewModel: ObservableObject{
     let categoryList: [String] = ["Action", "Mystery", "Comedy"]
     var categoryDict: [String: Welcome] = [:]
     var apiCount: Int = 0
+    var errorMessage: String?
     @Published var isLoading = false
-    @Published var errorMessage: String?
     
     func fetchData(category: String) async {
         isLoading = true
@@ -50,13 +47,16 @@ class HomeViewModel: ObservableObject{
             }
         } catch {
             print("Error fetching data: \(error.localizedDescription)")
-            isLoading = false
+            await MainActor.run {
+                isLoading = false
+            }
         }
         
-        if apiCount == categoryList.count{
-            isLoading = false
+        await MainActor.run {
+            if apiCount == categoryList.count{
+                isLoading = false
+            }
         }
-        
     }
     
     func getNavBarModel (rightAction: (() -> Void)?) -> NavBarModel{

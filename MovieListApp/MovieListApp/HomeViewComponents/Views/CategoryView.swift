@@ -10,7 +10,6 @@ import SDWebImageSwiftUI
 
 struct CategoryView: View {
     
-    @Binding var isLoading: Bool
     let categoryData: Welcome
     let categoryName: String
     
@@ -23,43 +22,32 @@ struct CategoryView: View {
                     .font(.title)
                     .fontWeight(.semibold)
                 Spacer()
-//                NavigationLink(value: "Action") {
+                NavigationLink(value: CategoryModel(categoryData: categoryData, categoryName: categoryName)) {
                     Text("See All")
                         .foregroundStyle(.gray)
-//                }
+                }
             }
             .padding(.horizontal)
             
             // Cards
             ScrollView(.horizontal) {
                 HStack {
-                    if isLoading {
-                        placeHolders
-                    } else{
-                        ForEach(0..<5){i in
-                            WebImage(url: URL(string: categoryData.results[i].primaryImage ?? ""))
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 150, height: 200)
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                        }
+                    ForEach(0..<5){i in
+                        WebImage(url: URL(string: categoryData.results[i].primaryImage ?? ""))
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 150, height: 200)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
-                    
                 }
             }
             .scrollIndicators(.hidden)
             .padding(.leading)
         }
+        .navigationDestination(for: CategoryModel.self, destination: { category in
+            SeeAllView(category: category)
+        })
         .background(Color.black)
-    }
-    
-    private var placeHolders: some View {
-        ForEach(0..<5){i in
-            Rectangle()
-                .frame(width: 150, height: 200)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .redactionShimmerViewModifier(isLoading: $isLoading)
-        }
     }
 }
 
