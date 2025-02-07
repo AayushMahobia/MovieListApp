@@ -63,6 +63,7 @@ struct HomeView: View {
         }
         .onAppear(){
             Task{
+                homeViewModel.apiCount = 0
                 for category in homeViewModel.categoryList {
                     await homeViewModel.fetchData(category: category)
                 }
