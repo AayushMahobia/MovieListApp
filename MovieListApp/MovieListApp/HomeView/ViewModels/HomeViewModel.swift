@@ -6,38 +6,57 @@
 //
 
 import Foundation
+import Compression
+//import BrotliKit
 
+@MainActor
 class HomeViewModel: ObservableObject{
     let categoryList: [String] = ["Action", "Mystery", "Comedy"]
-    var data: Welcome?
+    var categoryDict: [String: Welcome] = [:]
+    var apiCount: Int = 0
     @Published var isLoading = false
     @Published var errorMessage: String?
     
     func fetchData(category: String) async {
-        let apiURL = "https://imdb236.p.rapidapi.com/imdb/search?type=movie&genre=\(category)&rows=20&sortOrder=DESC&sortField=numVotes"
+        isLoading = true
+        apiCount += 1
         
-        guard let url = URL(string: apiURL) else {
-            self.errorMessage = "Invalid URL"
-            print(self.errorMessage ?? "some error (url)")
+        let headers = [
+            "x-rapidapi-key": "ecb465cf87msh04f2d770d060c77p185af0jsncdefda892e92",
+            "x-rapidapi-host": "imdb236.p.rapidapi.com",
+        ]
+        
+        guard let url = URL(string: "\(Urls.baseUrl + Urls.getCategoryUrl)\(category)&rows=20&sortOrder=DESC&sortField=numVotes") else {
+            print("Invalid URL")
+            isLoading = false
             return
         }
-
-        isLoading = true
-        errorMessage = nil
-
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = headers
+        
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let decodedData = try JSONDecoder().decode(Welcome.self, from: data)
-            self.data = decodedData
-
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                print("Request failed")
+                return
+            }
+            
+            if let decodedResponse = try? JSONDecoder().decode(Welcome.self, from: data) {
+                categoryDict[category] = decodedResponse
+            } else {
+                print("Unexpected Data Format:")
+            }
         } catch {
-            self.errorMessage = "Error: \(error.localizedDescription)"
-            print(self.errorMessage ?? "some error (data)")
-        }
-
-        await MainActor.run {
+            print("Error fetching data: \(error.localizedDescription)")
             isLoading = false
         }
+        
+        if apiCount == categoryList.count{
+            isLoading = false
+        }
+        
     }
     
     func getNavBarModel (rightAction: (() -> Void)?) -> NavBarModel{
@@ -47,3 +66,6 @@ class HomeViewModel: ObservableObject{
         return model
     }
 }
+
+
+

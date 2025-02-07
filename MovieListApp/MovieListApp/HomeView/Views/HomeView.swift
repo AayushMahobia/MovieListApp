@@ -24,11 +24,15 @@ struct HomeView: View {
                 // foreground
                 ZStack(alignment: .top) {
                     ScrollView {
-                        VStack(spacing: 18) {
+                        VStack(spacing: 18) { 
                             BannerView()
+                                .redactionShimmerViewModifier(isLoading: $homeViewModel.isLoading)
                             VStack(spacing: 18) {
                                 ForEach(homeViewModel.categoryList, id: \.self) { category in
-                                    CategoryView(category: category)
+                                    if let categoryData = homeViewModel.categoryDict[category] {
+                                        CategoryView(isLoading: $homeViewModel.isLoading, categoryData: categoryData, categoryName: category)
+//                                            .redactionShimmerViewModifier(isLoading: $homeViewModel.isLoading)
+                                    }
                                 }
                             }
                             .background(GeometryReader { geometry -> SwiftUI.Color in
@@ -54,21 +58,18 @@ struct HomeView: View {
                         return Color.clear
                     })
                     .background(navBarMaxYOffset <= tabMinYOffset ? Color.clear : Color.black)
+                    .redactionShimmerViewModifier(isLoading: $homeViewModel.isLoading)
+                }
+                
+            }
+        }
+        .onAppear(){
+            Task{
+                for category in homeViewModel.categoryList {
+                    await homeViewModel.fetchData(category: category)
                 }
             }
-//            .navigationDestination(for: String.self) { str in
-//                if homeViewModel.categoryList.contains(str) {
-//                    SeeAllView(category: str)
-//                } else {
-//                    MovieDetailsView(id: str)
-//                }
-//            }
         }
-//        .onAppear(){
-//            Task{
-//                await
-//            }
-//        }
     }
 }
 

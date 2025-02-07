@@ -10,34 +10,41 @@ import SDWebImageSwiftUI
 
 struct CategoryView: View {
     
-    let category: String
+    @Binding var isLoading: Bool
+    let categoryData: Welcome
+    let categoryName: String
     
     var body: some View {
         VStack{
             // Title
             HStack{
-                Text(category)
+                Text(categoryName)
                     .foregroundStyle(.white)
                     .font(.title)
                     .fontWeight(.semibold)
                 Spacer()
-                NavigationLink(value: "Action") {
+//                NavigationLink(value: "Action") {
                     Text("See All")
                         .foregroundStyle(.gray)
-                }
+//                }
             }
             .padding(.horizontal)
             
             // Cards
             ScrollView(.horizontal) {
                 HStack {
-                    ForEach(0..<5){_ in
-                        WebImage(url: URL(string: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"))
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 150, height: 200)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    if isLoading {
+                        placeHolders
+                    } else{
+                        ForEach(0..<5){i in
+                            WebImage(url: URL(string: categoryData.results[i].primaryImage ?? ""))
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 150, height: 200)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
                     }
+                    
                 }
             }
             .scrollIndicators(.hidden)
@@ -45,8 +52,17 @@ struct CategoryView: View {
         }
         .background(Color.black)
     }
+    
+    private var placeHolders: some View {
+        ForEach(0..<5){i in
+            Rectangle()
+                .frame(width: 150, height: 200)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .redactionShimmerViewModifier(isLoading: $isLoading)
+        }
+    }
 }
 
-#Preview {
-    CategoryView(category: "Action")
-}
+//#Preview {
+//    CategoryView(category: "Action")
+//}
