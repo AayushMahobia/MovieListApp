@@ -33,11 +33,13 @@ struct CategoryView: View {
             ScrollView(.horizontal) {
                 HStack {
                     ForEach(0..<5){i in
-                        WebImage(url: URL(string: categoryData.results[i].primaryImage ?? ""))
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 150, height: 200)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        NavigationLink(value: categoryData.results[i].id) {
+                            WebImage(url: URL(string: categoryData.results[i].primaryImage ?? ""))
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 150, height: 200)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
                     }
                 }
             }
@@ -47,6 +49,9 @@ struct CategoryView: View {
         .navigationDestination(for: CategoryModel.self, destination: { category in
             SeeAllView(category: category)
         })
+        .navigationDestination(for: String.self) { movieId in
+            MovieDetailsView(movieId: movieId)
+        }
         .background(Color.black)
     }
 }

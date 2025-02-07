@@ -27,7 +27,9 @@ struct SeeAllView: View {
                 ScrollView{
                     VStack{
                         ForEach(0..<category.categoryData.rows, id: \.self){ i in
-                            MovieCardView(movieData: category.categoryData.results[i])
+                            NavigationLink(value: category.categoryData.results[i].id) {
+                                MovieCardView(movieData: category.categoryData.results[i])
+                            }
                         }
                     }
                 }
