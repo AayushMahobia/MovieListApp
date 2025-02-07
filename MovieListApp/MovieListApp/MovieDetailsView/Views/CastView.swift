@@ -9,6 +9,9 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct CastView: View {
+    
+    let movieDetails: Movie?
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12){
             // Title
@@ -20,19 +23,27 @@ struct CastView: View {
             // Cards
             ScrollView(.horizontal){
                 HStack(spacing: 16){
-                    ForEach(0..<5){_ in
-                        VStack {
-                            WebImage(url: URL(string: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"))
-                                .resizable()
-                                .frame(width: 70, height: 70)
-                                .clipShape(Circle())
-                            Text("Actual Name")
-                                .font(.system(size: 14))
-                                .fontWeight(.semibold)
-                            Text("Movie Name")
-                                .font(.caption)
-                                .foregroundStyle(.gray)
+                    if let details = movieDetails, !details.cast.isEmpty {
+                        ForEach(details.cast, id: \.self) { actor in
+                            VStack {
+                                Image(systemName: "person.fill")
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .frame(width: 70, height: 70)
+                                    .background(Color(UIColor.darkGray))
+                                    .clipShape(Circle())
+                                Text(actor.fullName?.prefix(12) ?? "")
+                                    .font(.system(size: 14))
+                                    .fontWeight(.semibold)
+                                if let character = actor.characters?.first {
+                                    Text(character.prefix(12))
+                                        .font(.caption)
+                                        .foregroundStyle(.gray)
+                                }
+                            }
                         }
+                    } else {
+                        Text("No Cast Available")
                     }
                 }
             }
@@ -44,6 +55,6 @@ struct CastView: View {
     }
 }
 
-#Preview {
-    CastView()
-}
+//#Preview {
+//    CastView()
+//}

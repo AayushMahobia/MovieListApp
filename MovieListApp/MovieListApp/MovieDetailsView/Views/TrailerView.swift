@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct TrailerView: View {
+    
+    let movieDetails: Movie?
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16){
             // Screen
@@ -26,7 +29,7 @@ struct TrailerView: View {
             // Info
             VStack(alignment: .leading, spacing: 12){
                 HStack{
-                    Text("Inception")
+                    Text(movieDetails?.primaryTitle ?? "")
                         .font(.title)
                         .fontWeight(.semibold)
                     Spacer()
@@ -42,12 +45,12 @@ struct TrailerView: View {
                     HStack {
                         Image(systemName: "star.fill")
                             .foregroundStyle(.yellow)
-                        Text("9.0")
+                        Text(String(format: "%.1f", movieDetails?.averageRating ?? 0))
                     }
                     Group{
-                        Text("2000")
-                        Text("2h 30m")
-                        Text("R")
+                        Text(movieDetails?.releaseDate.prefix(4) ?? "")
+                        Text("\(movieDetails?.runtimeMinutes ?? 0) min")
+                        Text(movieDetails?.contentRating ?? "")
                         Text("HD")
                     }
                     .foregroundStyle(.gray)
@@ -86,6 +89,6 @@ struct TrailerView: View {
     }
 }
 
-#Preview {
-    TrailerView()
-}
+//#Preview {
+//    TrailerView()
+//}
