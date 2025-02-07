@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SeeAllView: View {
     
-    let category: String
+    let category: CategoryModel
     @StateObject var seeAllViewModel: SeeAllViewModel = SeeAllViewModel()
     @Environment(\.dismiss) var dismiss
     
@@ -20,14 +20,14 @@ struct SeeAllView: View {
                 .ignoresSafeArea(edges: .all)
             
             // foreground
-            VStack(alignment: .leading, spacing: 18) {
-                NavBarView(model: seeAllViewModel.getNavBarModel(category: category ,leftAction: {
+            VStack(alignment: .leading, spacing: 20) {
+                NavBarView(model: seeAllViewModel.getNavBarModel(category: category.categoryName ,leftAction: {
                     dismiss()
                 }))
                 ScrollView{
                     VStack{
-                        NavigationLink(value: "id") {
-                            MovieCardView()
+                        ForEach(0..<category.categoryData.rows, id: \.self){ i in
+                            MovieCardView(movieData: category.categoryData.results[i])
                         }
                     }
                 }
@@ -38,6 +38,6 @@ struct SeeAllView: View {
     }
 }
 
-#Preview {
-    SeeAllView(category: "Action")
-}
+//#Preview {
+//    SeeAllView(category: "Action")
+//}

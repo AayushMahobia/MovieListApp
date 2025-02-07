@@ -1,11 +1,11 @@
 import Foundation
 
-struct Welcome: Codable {
+struct Welcome: Codable, Hashable {
     let rows: Int
     let results: [Result]
 }
 
-struct Result: Codable {
+struct Result: Codable, Hashable {
     let id: String?
     let primaryTitle: String?
     let description: String?

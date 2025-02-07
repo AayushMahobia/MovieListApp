@@ -9,27 +9,30 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct MovieCardView: View {
+    
+    let movieData: Result
+    
     var body: some View {
         HStack(spacing: 20){
-            WebImage(url: URL(string: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"))
+            WebImage(url: URL(string: movieData.primaryImage ?? ""))
                 .resizable()
                 .frame(width: 80, height: 120)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             
             VStack(alignment: .leading, spacing: 10){
-                Text("Inception")
+                Text(movieData.primaryTitle?.prefix(18) ?? "")
                     .font(.title3)
                     .fontWeight(.semibold)
                     .foregroundStyle(.white)
                 HStack {
-                    Text("2000")
-                    Text("150 min")
+                    Text(movieData.releaseDate?.prefix(4) ?? "")
+                    Text("\(movieData.runtimeMinutes ?? 0) min")
                 }
                 .foregroundStyle(.gray)
                 HStack{
                     Image(systemName: "star.fill")
                         .foregroundStyle(.yellow)
-                    Text("9.0")
+                    Text(String(format: "%.1f", movieData.averageRating ?? 0))
                         .foregroundStyle(.gray)
                 }
             }
@@ -45,6 +48,6 @@ struct MovieCardView: View {
     }
 }
 
-#Preview {
-    MovieCardView()
-}
+//#Preview {
+//    MovieCardView()
+//}
