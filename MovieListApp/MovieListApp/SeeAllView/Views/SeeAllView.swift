@@ -12,6 +12,7 @@ struct SeeAllView: View {
     let category: CategoryModel
     @StateObject var seeAllViewModel: SeeAllViewModel = SeeAllViewModel()
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var pathManager: NavigationPathManager
     
     var body: some View {
         ZStack {
@@ -26,10 +27,12 @@ struct SeeAllView: View {
                 }))
                 ScrollView{
                     VStack{
-                        ForEach(0..<category.categoryData.rows, id: \.self){ i in
-                            NavigationLink(value: category.categoryData.results[i].id) {
-                                MovieCardView(movieData: category.categoryData.results[i])
-                            }
+                        ForEach(0..<(category.categoryData.results.count), id: \.self){ i in
+                            MovieCardView(movieData: category.categoryData.results[i])
+                                .onTapGesture {
+                                    let id: String = category.categoryData.results[i].id ?? ""
+                                    pathManager.path.append(id)
+                                }
                         }
                     }
                 }

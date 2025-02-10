@@ -13,9 +13,10 @@ struct HomeView: View {
     @State var navBarMaxYOffset: CGFloat = 0.0
     
     @StateObject var homeViewModel: HomeViewModel = HomeViewModel()
+    @EnvironmentObject var pathManager: NavigationPathManager
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $pathManager.path) {
             ZStack{
                 // background
                 Color.black
@@ -26,7 +27,7 @@ struct HomeView: View {
                     ScrollView {
                         VStack(spacing: 18) { 
                             BannerView()
-                                .redactionShimmerViewModifier(isLoading: $homeViewModel.isLoading)
+                            
                             VStack(spacing: 18) {
                                 ForEach(homeViewModel.categoryList, id: \.self) { category in
                                     if let categoryData = homeViewModel.categoryDict[category] {
@@ -47,7 +48,7 @@ struct HomeView: View {
                     .ignoresSafeArea(edges: .top)
                     
                     NavBarView(model: homeViewModel.getNavBarModel(rightAction: {
-                        
+                        pathManager.path.append("SearchView")
                     }))
                     .background(GeometryReader { geometry -> SwiftUI.Color in
                         DispatchQueue.main.async {
@@ -59,6 +60,16 @@ struct HomeView: View {
                     .background(navBarMaxYOffset <= tabMinYOffset ? Color.clear : Color.black)
                 }
                 .redactionShimmerViewModifier(isLoading: $homeViewModel.isLoading)
+            }
+            .navigationDestination(for: CategoryModel.self, destination: { category in
+                SeeAllView(category: category)
+            })
+            .navigationDestination(for: String.self) { destination in
+                if destination == "SearchView" {
+                    SearchView()
+                } else {
+                    MovieDetailsView(movieId: destination)
+                }
             }
         }
         .onAppear(){

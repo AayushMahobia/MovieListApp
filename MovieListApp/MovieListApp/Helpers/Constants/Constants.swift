@@ -11,4 +11,6 @@ struct Urls{
     static let baseUrl = "https://imdb236.p.rapidapi.com/imdb/"
     
     static let getCategoryUrl = "search?type=movie&genre="
+    
+    static let getSearchUrl = "autocomplete?query="
 }

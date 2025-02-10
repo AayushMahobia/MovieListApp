@@ -15,7 +15,10 @@ class HomeViewModel: ObservableObject{
     @Published var isLoading = false
     
     func fetchData(category: String) async {
-        isLoading = true
+        
+        await MainActor.run {
+            isLoading = true
+        }
         apiCount += 1
         
         let headers = [
