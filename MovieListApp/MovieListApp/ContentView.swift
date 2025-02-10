@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     
+    @StateObject var pathManager: NavigationPathManager = NavigationPathManager()
+
     var body: some View {
         TabView{
             Tab {
@@ -18,23 +20,24 @@ struct ContentView: View {
             }
             
             Tab {
-                Color.black.ignoresSafeArea(edges: .all)
+                Text("Tab 2")
             } label: {
                 Image(systemName: "hand.thumbsup.circle.fill")
             }
             
             Tab {
-                Color.black.ignoresSafeArea(edges: .all)
+                Text("Tab 3")
             } label: {
                 Image(systemName: "icloud.and.arrow.down.fill")
             }
             
             Tab {
-                Color.black.ignoresSafeArea(edges: .all)
+                Text("Tab 4")
             } label: {
                 Image(systemName: "movieclapper.fill")
             }
         }
+        .environmentObject(pathManager)
         .preferredColorScheme(.dark)
         .tint(.white)
     }
@@ -42,4 +45,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(NavigationPathManager())
 }

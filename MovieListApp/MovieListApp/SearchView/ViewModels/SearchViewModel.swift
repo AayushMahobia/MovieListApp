@@ -1,17 +1,20 @@
 //
-//  MovieDetailsViewModel.swift
+//  SearchViewModel.swift
 //  MovieListApp
 //
-//  Created by Admin on 06/02/25.
+//  Created by Admin on 10/02/25.
 //
 
 import Foundation
 
-class MovieDetailsViewModel: ObservableObject {
-    var movieDetails: Movie?
+class SearchViewModel: ObservableObject {
+    @Published var searchText: String = ""
     @Published var isLoading = false
     
-    func fetchMovieData(movieId: String) async {
+    // Result is in HomeModel
+    var searchData: [Result]?
+    
+    func fetchData(searchText: String) async {
         await MainActor.run {
             isLoading = true
         }
@@ -21,7 +24,7 @@ class MovieDetailsViewModel: ObservableObject {
             "x-rapidapi-host": "imdb236.p.rapidapi.com",
         ]
         
-        guard let url = URL(string: "\(Urls.baseUrl + movieId)") else {
+        guard let url = URL(string: "\(Urls.baseUrl + Urls.getSearchUrl + searchText)") else {
             print("Invalid URL")
             isLoading = false
             return
@@ -38,24 +41,20 @@ class MovieDetailsViewModel: ObservableObject {
                 return
             }
             
-            if let decodedResponse = try? JSONDecoder().decode(Movie.self, from: data) {
-                movieDetails = decodedResponse
+            if let decodedResponse = try? JSONDecoder().decode([Result].self, from: data) {
+                searchData = decodedResponse
             } else {
                 print("Unexpected Data Format:")
             }
         } catch {
             print("Error fetching data: \(error.localizedDescription)")
+            await MainActor.run {
+                isLoading = false
+            }
         }
         
         await MainActor.run {
             isLoading = false
         }
-    }
-    
-    func getNavBarModel (leftAction: (() -> Void)?) -> NavBarModel {
-        let model = NavBarModel(leftIcon: "chevron.left", rightIcon: "ellipsis", leftIconAction:  {
-            leftAction?()
-        })
-        return model
     }
 }

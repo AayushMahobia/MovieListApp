@@ -12,6 +12,7 @@ struct CategoryView: View {
     
     let categoryData: Welcome
     let categoryName: String
+    @EnvironmentObject var pathManager: NavigationPathManager
     
     var body: some View {
         VStack{
@@ -22,10 +23,12 @@ struct CategoryView: View {
                     .font(.title)
                     .fontWeight(.semibold)
                 Spacer()
-                NavigationLink(value: CategoryModel(categoryData: categoryData, categoryName: categoryName)) {
-                    Text("See All")
-                        .foregroundStyle(.gray)
-                }
+                Text("See All")
+                    .foregroundStyle(.gray)
+                    .onTapGesture {
+                        let categoryModel = CategoryModel(categoryData: categoryData, categoryName: categoryName)
+                        pathManager.path.append(categoryModel)
+                    }
             }
             .padding(.horizontal)
             
@@ -33,24 +36,20 @@ struct CategoryView: View {
             ScrollView(.horizontal) {
                 HStack {
                     ForEach(0..<5){i in
-                        NavigationLink(value: categoryData.results[i].id) {
-                            WebImage(url: URL(string: categoryData.results[i].primaryImage ?? ""))
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 150, height: 200)
-                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                        }
+                        WebImage(url: URL(string: categoryData.results[i].primaryImage ?? ""))
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 150, height: 200)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .onTapGesture {
+                                let id: String = categoryData.results[i].id ?? ""
+                                pathManager.path.append(id)
+                            }
                     }
                 }
             }
             .scrollIndicators(.hidden)
             .padding(.leading)
-        }
-        .navigationDestination(for: CategoryModel.self, destination: { category in
-            SeeAllView(category: category)
-        })
-        .navigationDestination(for: String.self) { movieId in
-            MovieDetailsView(movieId: movieId)
         }
         .background(Color.black)
     }

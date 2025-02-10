@@ -1,7 +1,6 @@
 import Foundation
 
 struct Welcome: Codable, Hashable {
-    let rows: Int
     let results: [Result]
 }
 
